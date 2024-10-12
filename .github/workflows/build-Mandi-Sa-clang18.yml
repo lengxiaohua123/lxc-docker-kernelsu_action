@@ -65,6 +65,9 @@ jobs:
         if [ -f android-kernel/kernel/cgroup/cgroup.c ]; then
         ./runcpatch.sh android-kernel/kernel/cgroup/cgroup.c               
         fi
+        if [ -f android-kernel/net/netfilter/xt_qtaguid.c ]; then
+         wget https://github.com/yuweiyuan8/LXC-DOCKER-KernelSU_Action/releases/download/download/xt_qtaguid.patch
+        fi
     
     - name: 修复clang18部分
       run: |
