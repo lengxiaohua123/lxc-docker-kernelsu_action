@@ -94,6 +94,13 @@ jobs:
       run: |
         cd $GITHUB_WORKSPACE/kernel_workspace/android-kernel
         curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s ${{ env.KERNELSU_TAG }}
+        echo "CONFIG_KPROBES=y" >> "$GITHUB_WORKSPACE/kernel_workspace/android-kernel/arch/arm64/configs/${{ env.KERNEL_CONFIG }}"
+        echo "CONFIG_HAVE_KPROBES=y" >> "$GITHUB_WORKSPACE/kernel_workspace/android-kernel/arch/arm64/configs/${{ env.KERNEL_CONFIG }}"
+        echo "CONFIG_KPROBE_EVENTS=y" >> "$GITHUB_WORKSPACE/kernel_workspace/android-kernel/arch/arm64/configs/${{ env.KERNEL_CONFIG }}"
+
+        #下面2项，按情况选择吧。
+        echo "CONFIG_OVERLAY_FS=y" >> "$GITHUB_WORKSPACE/kernel_workspace/android-kernel/arch/arm64/configs/${{ env.KERNEL_CONFIG }}"
+        echo "CONFIG_MODULES=y" >> "$GITHUB_WORKSPACE/kernel_workspace/android-kernel/arch/arm64/configs/${{ env.KERNEL_CONFIG }}"
 
     - name: 开启kvm
       if: env.ENABLE_KVM == 'true'
