@@ -31,8 +31,6 @@ jobs:
         sudo -E apt-get -y -qq install git make bc bison ccache openssl zip kmod cpio flex libelf-dev curl libssl-dev libtfm-dev wget device-tree-compiler ca-certificates python3 python2 binutils binutils-aarch64-linux-gnu binutils-arm-linux-gnueabi
         mkdir -p $GITHUB_WORKSPACE/kernel_workspace
         ls -al $GITHUB_WORKSPACE
-        exit 0
-
     
     - name: 下载 阿菌未霜 clang 编译器
       run: |
@@ -53,7 +51,7 @@ jobs:
         cp $GITHUB_WORKSPACE/utils $GITHUB_WORKSPACE/kernel_workspace/android-kernel/ -R
         cp $GITHUB_WORKSPACE/LXC-DOCKER-OPEN-CONFIG.sh $GITHUB_WORKSPACE/kernel_workspace/android-kernel
         chmod +x $GITHUB_WORKSPACE/kernel_workspace/android-kernel/*.sh
-cd $GITHUB_WORKSPACE/kernel_workspace/android-kernel
+        cd $GITHUB_WORKSPACE/kernel_workspace/android-kernel
 
         sh $GITHUB_WORKSPACE/kernel_workspace/android-kernel/LXC-DOCKER-OPEN-CONFIG.sh $GITHUB_WORKSPACE/kernel_workspace/android-kernel/arch/arm64/configs/${{ env.KERNEL_CONFIG }} -w
 
