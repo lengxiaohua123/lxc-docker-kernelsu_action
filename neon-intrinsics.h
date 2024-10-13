@@ -1,6 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Copyright (C) 2018 Linaro, Ltd. <ard.biesheuvel@linaro.org>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
  */
 
 #ifndef __ASM_NEON_INTRINSICS_H
@@ -16,12 +19,12 @@
 
 #ifdef __INT64_TYPE__
 #undef __INT64_TYPE__
-#define __INT64_TYPE__		long long
+#define __INT64_TYPE__                long long
 #endif
 
 #ifdef __UINT64_TYPE__
 #undef __UINT64_TYPE__
-#define __UINT64_TYPE__		unsigned long long
+#define __UINT64_TYPE__                unsigned long long
 #endif
 
 /*
@@ -33,7 +36,7 @@
 #include <arm_neon.h>
 #endif
 
-#ifdef CONFIG_CC_IS_CLANG
+#ifdef __clang__
 #pragma clang diagnostic ignored "-Wincompatible-pointer-types"
 #endif
 
