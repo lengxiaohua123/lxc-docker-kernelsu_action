@@ -146,5 +146,5 @@ jobs:
     - name: 打包并上传
       uses: actions/upload-artifact@v3
       with:
-        name: ${{ env.KERNEL_ZIP_NAME }}
+        name: "${{ env.KERNEL_ZIP_NAME }}_$(TZ=UTC-8 date +%m%d%H%M )"
         path: kernel_workspace/AnyKernel3/*
