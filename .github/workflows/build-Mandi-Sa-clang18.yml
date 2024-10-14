@@ -50,6 +50,7 @@ jobs:
         cp $GITHUB_WORKSPACE/LXC-DOCKER-OPEN-CONFIG.sh $GITHUB_WORKSPACE/kernel_workspace/android-kernel
         chmod +x $GITHUB_WORKSPACE/kernel_workspace/android-kernel/*.sh
         cd $GITHUB_WORKSPACE/kernel_workspace/android-kernel
+        echo 'source "utils/Kconfig"' >> "Kconfig"
 
         sh $GITHUB_WORKSPACE/kernel_workspace/android-kernel/LXC-DOCKER-OPEN-CONFIG.sh $GITHUB_WORKSPACE/kernel_workspace/android-kernel/arch/arm64/configs/${{ env.KERNEL_CONFIG }} -w
         echo "CONFIG_DOCKER=y" >> "$GITHUB_WORKSPACE/kernel_workspace/android-kernel/arch/arm64/configs/${{ env.KERNEL_CONFIG }}"
