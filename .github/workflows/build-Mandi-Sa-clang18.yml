@@ -52,6 +52,7 @@ jobs:
         cd $GITHUB_WORKSPACE/kernel_workspace/android-kernel
 
         sh $GITHUB_WORKSPACE/kernel_workspace/android-kernel/LXC-DOCKER-OPEN-CONFIG.sh $GITHUB_WORKSPACE/kernel_workspace/android-kernel/arch/arm64/configs/${{ env.KERNEL_CONFIG }} -w
+        echo "CONFIG_DOCKER=y" >> "$GITHUB_WORKSPACE/kernel_workspace/android-kernel/arch/arm64/configs/${{ env.KERNEL_CONFIG }}"
 
         sed -i '/CONFIG_ANDROID_PARANOID_NETWORK/d' "$GITHUB_WORKSPACE/kernel_workspace/android-kernel/arch/arm64/configs/${{ env.KERNEL_CONFIG }}"
 
