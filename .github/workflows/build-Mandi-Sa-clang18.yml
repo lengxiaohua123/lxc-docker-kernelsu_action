@@ -134,6 +134,7 @@ jobs:
                 
     - name: 准备打包内核
       run: |
+        echo "BUILD_TIME=$(TZ=Asia/Shanghai date "+%Y%m%d%H%M")" >> $GITHUB_ENV
         cd $GITHUB_WORKSPACE/kernel_workspace
         git clone https://github.com/osm0sis/AnyKernel3
         sed -i 's/do.devicecheck=1/do.devicecheck=0/g' AnyKernel3/anykernel.sh
@@ -145,5 +146,5 @@ jobs:
     - name: 打包并上传
       uses: actions/upload-artifact@v3
       with:
-        name: "${{ env.KERNEL_ZIP_NAME }}_$(TZ=UTC-8 date +%m%d%H%M )"
+        name: ${{ env.KERNEL_ZIP_NAME }}_${{ env.BUILD_TIME }}
         path: kernel_workspace/AnyKernel3/*
