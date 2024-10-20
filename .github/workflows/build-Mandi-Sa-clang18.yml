@@ -25,7 +25,7 @@ jobs:
         cat config.env | grep ENABLE_KERNELSU= >> $GITHUB_ENV
         cat config.env | grep KERNELSU_TAG= >> $GITHUB_ENV
         echo "ARCH=arm64" >> $GITHUB_ENV
-
+        cat config.env | grep ADD_KPROBES_CONFIG= >> $GITHUB_ENV
         cat config.env | grep ADD_OVERLAYFS_CONFIG= >> $GITHUB_ENV
         cat config.env | grep DISABLE-LTO= >> $GITHUB_ENV
         cat config.env | grep DISABLE_CC_WERROR= >> $GITHUB_ENV
