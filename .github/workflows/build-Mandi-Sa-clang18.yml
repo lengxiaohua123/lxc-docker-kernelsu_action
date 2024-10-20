@@ -79,19 +79,22 @@ jobs:
         if [ -f $GITHUB_WORKSPACE/kernel_workspace/android-kernel/kernel/cgroup/cgroup.c ]; then
         sh $GITHUB_WORKSPACE/kernel_workspace/android-kernel/utils/runcpatch.sh $GITHUB_WORKSPACE/kernel_workspace/android-kernel/kernel/cgroup/cgroup.c
         echo "kernel/cgroup/cgroup.c"
-        cat $GITHUB_WORKSPACE/kernel_workspace/android-kernel/kernel/cgroup/cgroup.c
+        #cat $GITHUB_WORKSPACE/kernel_workspace/android-kernel/kernel/cgroup/cgroup.c
+        git diff kernel/cgroup/cgroup.c
         fi
 
         if [ -f $GITHUB_WORKSPACE/kernel_workspace/android-kernel/kernel/cgroup.c ]; then
         sh $GITHUB_WORKSPACE/kernel_workspace/android-kernel/utils/runcpatch.sh $GITHUB_WORKSPACE/kernel_workspace/android-kernel/kernel/cgroup.c
         echo "kernel/cgroup.c"
-        cat $GITHUB_WORKSPACE/kernel_workspace/android-kernel/kernel/cgroup.c
+        #cat $GITHUB_WORKSPACE/kernel_workspace/android-kernel/kernel/cgroup.c
+        git diff kernel/cgroup.c
         fi
 
         if [ -f $GITHUB_WORKSPACE/kernel_workspace/android-kernel/net/netfilter/xt_qtaguid.c ]; then
         patch -p0 < $GITHUB_WORKSPACE/kernel_workspace/android-kernel/utils/xt_qtaguid.patch
         echo "xt_qtaguid.c"
-        cat $GITHUB_WORKSPACE/kernel_workspace/android-kernel/net/netfilter/xt_qtaguid.c
+        #cat $GITHUB_WORKSPACE/kernel_workspace/android-kernel/net/netfilter/xt_qtaguid.c
+        git diff net/netfilter/xt_qtaguid.c
         fi
         cp $GITHUB_WORKSPACE/neon-intrinsics.h $GITHUB_WORKSPACE/kernel_workspace/android-kernel/arch/arm64/include/asm
         
