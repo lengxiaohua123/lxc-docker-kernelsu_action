@@ -144,7 +144,7 @@ jobs:
         rm -rf AnyKernel3/.git* AnyKernel3/README.md
     
     - name: 打包并上传
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@main
       with:
         name: ${{ env.KERNEL_ZIP_NAME }}_${{ env.BUILD_TIME }}
         path: kernel_workspace/AnyKernel3/*
