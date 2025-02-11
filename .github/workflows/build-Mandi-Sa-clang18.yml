@@ -36,7 +36,7 @@ jobs:
       run: |
         cd $GITHUB_WORKSPACE/kernel_workspace
         mkdir clang-mandi-sa
-        git clone https://codeberg.org/Mandi-Sa/clang --depth=1 -b amd64-kernel-arm clang-mandi-sa
+        git clone https://gitea.com/Mandi-Sa/clang --depth=1 -b amd64-kernel-arm clang-mandi-sa
         
     - name: 下载内核源码
       run: |
