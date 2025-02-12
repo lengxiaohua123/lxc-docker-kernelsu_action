@@ -1,10 +1,10 @@
-name: 低端机 阿菌未霜clang18 
+name: 低端机 zyc-clang
 on:
   workflow_dispatch:
 
 jobs:
   build:
-    name: 
+    name: build kernel
     runs-on: ubuntu-22.04
     if: github.event.repository.owner.id == github.event.sender.id
     
@@ -31,12 +31,19 @@ jobs:
         sudo -E apt-get -y -qq install git make bc bison ccache openssl zip kmod cpio flex libelf-dev curl libssl-dev libtfm-dev wget device-tree-compiler ca-certificates python3 python2 binutils binutils-aarch64-linux-gnu binutils-arm-linux-gnueabi
         mkdir -p $GITHUB_WORKSPACE/kernel_workspace
         ls -al $GITHUB_WORKSPACE
-    
-    - name: 下载 阿菌未霜 clang 编译器
+
+    - name: 切换python2.7
+      if: env.SWITCH_PYTHON == 'true'
+      run: |
+        sudo rm -f /usr/bin/python
+        sudo ln -s /usr/bin/python2.7 /usr/bin/python
+
+    - name: 下载zyc-clang编译器
       run: |
         cd $GITHUB_WORKSPACE/kernel_workspace
-        mkdir clang-mandi-sa
-        git clone https://gitea.com/Mandi-Sa/clang --depth=1 -b amd64-kernel-arm clang-mandi-sa
+        mkdir clang-zyc
+        axel https://github.com/ZyCromerZ/Clang/releases/download/20.0.0git-20241016-release/Clang-20.0.0git-20241016.tar.gz
+        tar -C clang-zyc/ -zxf Clang-20.0.0git-20241016.tar.gz
         
     - name: 下载内核源码
       run: |
@@ -82,27 +89,23 @@ jobs:
         if [ -f $GITHUB_WORKSPACE/kernel_workspace/android-kernel/net/netfilter/xt_qtaguid.c ]; then
         patch -p0 < $GITHUB_WORKSPACE/kernel_workspace/android-kernel/utils/xt_qtaguid.patch
         fi
-        cp $GITHUB_WORKSPACE/neon-intrinsics.h $GITHUB_WORKSPACE/kernel_workspace/android-kernel/arch/arm64/include/asm
+        # cp $GITHUB_WORKSPACE/neon-intrinsics.h $GITHUB_WORKSPACE/kernel_workspace/android-kernel/arch/arm64/include/asm
         
         cat $GITHUB_WORKSPACE/kernel_workspace/android-kernel/arch/arm64/include/asm/neon-intrinsics.h
     
     - name: 修复clang18部分
       run: |
         cd $GITHUB_WORKSPACE/kernel_workspace/android-kernel
-        sed -i "s/CONFIG_CC_STACKPROTECTOR_STRONG=y/# CONFIG_CC_STACKPROTECTOR_STRONG is not set/g" arch/arm64/configs/${{ env.KERNEL_CONFIG }}  
+        sed -i "s/CONFIG_CC_STACKPROTECTOR_STRONG=y/# CONFIG_CC_STACKPROTECTOR_STRONG is not set/g" arch/arm64/configs/${{ env.KERNEL_CONFIG }}
+        wget https://github.com/lengxiaohua123/LXC_KernelSU_Action/blob/main/patches/clangfix2.sh
+        chmod u+x clangfix2.sh
+        ./clangfix2.sh
         
     - name: 配置 ksu
       if: env.ENABLE_KERNELSU == 'true'
       run: |
         cd $GITHUB_WORKSPACE/kernel_workspace/android-kernel
-        curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s ${{ env.KERNELSU_TAG }}
-        echo "CONFIG_KPROBES=y" >> "$GITHUB_WORKSPACE/kernel_workspace/android-kernel/arch/arm64/configs/${{ env.KERNEL_CONFIG }}"
-        echo "CONFIG_HAVE_KPROBES=y" >> "$GITHUB_WORKSPACE/kernel_workspace/android-kernel/arch/arm64/configs/${{ env.KERNEL_CONFIG }}"
-        echo "CONFIG_KPROBE_EVENTS=y" >> "$GITHUB_WORKSPACE/kernel_workspace/android-kernel/arch/arm64/configs/${{ env.KERNEL_CONFIG }}"
-
-        #下面2项，按情况选择吧。
-        echo "CONFIG_OVERLAY_FS=y" >> "$GITHUB_WORKSPACE/kernel_workspace/android-kernel/arch/arm64/configs/${{ env.KERNEL_CONFIG }}"
-        echo "CONFIG_MODULES=y" >> "$GITHUB_WORKSPACE/kernel_workspace/android-kernel/arch/arm64/configs/${{ env.KERNEL_CONFIG }}"
+        curl -LSs "https://raw.githubusercontent.com/jqtmviyu/KernelSU/095/kernel/setup.sh" | bash -s ${{ env.KERNELSU_TAG }}
 
     - name: 开启kvm
       if: env.ENABLE_KVM == 'true'
@@ -122,26 +125,38 @@ jobs:
     - name: 开始编译内核
       run: |
         cd $GITHUB_WORKSPACE/kernel_workspace/android-kernel
-        export PATH=$GITHUB_WORKSPACE/kernel_workspace/clang-mandi-sa/bin:$PATH
+        export PATH=$GITHUB_WORKSPACE/kernel_workspace/clang-zyc/bin:$PATH
         export KBUILD_BUILD_HOST=17
         export KBUILD_BUILD_USER=HyperPower
         make -s -j$(nproc --all) O=out ARCH=arm64 ${{ env.KERNEL_CONFIG }}
         if [ ${{env.LLVM_CONFIG}}=y ]; then
-        make -j$(nproc --all) CC="ccache clang" CXX=clang++ O=out ARCH=arm64 CLANG_TRIPLE="aarch64-linux-gnu-" CROSS_COMPILE="aarch64-linux-gnu-" CROSS_COMPILE_ARM32="arm-linux-gnueabi-" LLVM=1 LLVM_IAS=1
+        make -j$(nproc --all) CONFIG_DEBUG_SECTION_MISMATCH=y CC="ccache clang" CXX=clang++ O=out ARCH=arm64 CLANG_TRIPLE="aarch64-linux-gnu-" CROSS_COMPILE="aarch64-linux-gnu-" CROSS_COMPILE_ARM32="arm-linux-gnueabi-" LLVM=1 LLVM_IAS=1
         else
-        make -j$(nproc --all) CC="ccache clang" CXX=clang++ O=out ARCH=arm64 CLANG_TRIPLE="aarch64-linux-gnu-" CROSS_COMPILE="aarch64-linux-gnu-" CROSS_COMPILE_ARM32="arm-linux-gnueabi-"
+        make -j$(nproc --all) CONFIG_DEBUG_SECTION_MISMATCH=y CC="ccache clang" CXX=clang++ O=out ARCH=arm64 CLANG_TRIPLE="aarch64-linux-gnu-" CROSS_COMPILE="aarch64-linux-gnu-" CROSS_COMPILE_ARM32="arm-linux-gnueabi-"
         fi
                 
     - name: 准备打包内核
       run: |
-        echo "BUILD_TIME=$(TZ=Asia/Shanghai date "+%Y%m%d%H%M")" >> $GITHUB_ENV
         cd $GITHUB_WORKSPACE/kernel_workspace
         git clone https://github.com/osm0sis/AnyKernel3
+        cd AnyKernel3
+        git checkout 458caeda335554c58930bf6dbfa23e829911e338
+        cd ../
         sed -i 's/do.devicecheck=1/do.devicecheck=0/g' AnyKernel3/anykernel.sh
         sed -i 's!block=/dev/block/platform/omap/omap_hsmmc.0/by-name/boot;!block=auto;!g' AnyKernel3/anykernel.sh
-        sed -i 's/is_slot_device=0;/is_slot_device=auto;/g' AnyKernel3/anykernel.sh
-        cp android-kernel/out/arch/arm64/boot/Image.gz-dtb AnyKernel3/
+        sed -i 's/is_slot_device=1;/is_slot_device=auto;/g' AnyKernel3/anykernel.sh
+        cp android-kernel/out/arch/arm64/boot/${{ env.KERNEL_IMAGE_NAME }} AnyKernel3/
+        if [ ${{ env.NEED_DTBO }} = true ]; then
+            echo "NEED=true" >> $GITHUB_ENV
+            if [ -f android-kernel/out/arch/arm64/boot/dtbo.img ]; then
+                echo "DTBO_EXIST=true" >> $GITHUB_ENV
+            fi
+        fi
+        if [ ${{ env.DTBO_EXIST }} = true ]; then
+            cp android-kernel/out/arch/arm64/boot/dtbo.img AnyKernel3/
+        fi
         rm -rf AnyKernel3/.git* AnyKernel3/README.md
+        rm -rf AnyKernel3/ramdisk AnyKernel3/modules AnyKernel3/patch
     
     - name: 打包并上传
       uses: actions/upload-artifact@main
