@@ -50,7 +50,6 @@ jobs:
         git clone -q --depth=1 --single-branch https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86 -b android13-release clang-aosp
         wget https://github.com/tomxi1997/Toolchain-for-aarch64-hosts/releases/download/v6/google_gcc-4.9-main-20240120.tar.xz
         tar -xf google_gcc-4.9-main-20240120.tar.xz
-        mv google_gcc-4.9-main-20240120 google_gcc-4.9-main
         
     - name: 下载内核源码
       run: |
