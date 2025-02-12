@@ -46,9 +46,8 @@ jobs:
     - name: 下载zyc-clang编译器
       run: |
         cd $GITHUB_WORKSPACE/kernel_workspace
-        mkdir clang-zyc
-        wget https://github.com/ZyCromerZ/Clang/releases/download/20.0.0git-20241016-release/Clang-20.0.0git-20241016.tar.gz
-        tar -C clang-zyc/ -zxf Clang-20.0.0git-20241016.tar.gz
+        mkdir clang-aosp
+        git clone -q --depth=1 --single-branch https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86 -b android13-release clang-aosp
         
     - name: 下载内核源码
       run: |
@@ -108,6 +107,7 @@ jobs:
         #cat $GITHUB_WORKSPACE/kernel_workspace/android-kernel/arch/arm64/include/asm/neon-intrinsics.h
     
     - name: 修复clang18部分
+      if: env.ENABLE_KERNELSU == 'true'
       run: |
         cd $GITHUB_WORKSPACE/kernel_workspace/android-kernel
         sed -i "s/CONFIG_CC_STACKPROTECTOR_STRONG=y/# CONFIG_CC_STACKPROTECTOR_STRONG is not set/g" arch/arm64/configs/${{ env.KERNEL_CONFIG }}
@@ -139,14 +139,14 @@ jobs:
     - name: 开始编译内核
       run: |
         cd $GITHUB_WORKSPACE/kernel_workspace/android-kernel
-        export PATH=$GITHUB_WORKSPACE/kernel_workspace/clang-zyc/bin:$PATH
-        export KBUILD_BUILD_HOST=17
-        export KBUILD_BUILD_USER=HyperPower
+        export PATH=$GITHUB_WORKSPACE/kernel_workspace/clang-aosp/clang-r450784d/bin:$PATH
+        # export KBUILD_BUILD_HOST=17
+        # export KBUILD_BUILD_USER=HyperPower
         make -s -j$(nproc --all) O=out ARCH=arm64 ${{ env.KERNEL_CONFIG }}
         if [ ${{env.LLVM_CONFIG}}=y ]; then
-        make -j$(nproc --all) CONFIG_DEBUG_SECTION_MISMATCH=y CC="ccache clang" CXX=clang++ O=out ARCH=arm64 CLANG_TRIPLE="aarch64-linux-gnu-" CROSS_COMPILE="aarch64-linux-gnu-" CROSS_COMPILE_ARM32="arm-linux-gnueabi-" LLVM=1 LLVM_IAS=1
+        make -j$(nproc --all) CC="ccache clang" CXX=clang++ O=out ARCH=arm64 SUBARCH=arm64 CLANG_TRIPLE="aarch64-linux-gnu-" CROSS_COMPILE="aarch64-linux-gnu-" CROSS_COMPILE_ARM32="arm-linux-gnueabi-" LLVM=1 LLVM_IAS=1
         else
-        make -j$(nproc --all) CONFIG_DEBUG_SECTION_MISMATCH=y CC="ccache clang" CXX=clang++ O=out ARCH=arm64 CLANG_TRIPLE="aarch64-linux-gnu-" CROSS_COMPILE="aarch64-linux-gnu-" CROSS_COMPILE_ARM32="arm-linux-gnueabi-"
+        make -j$(nproc --all) CC="ccache clang" CXX=clang++ O=out ARCH=arm64 SUBARCH=arm64 CLANG_TRIPLE="aarch64-linux-gnu-" CROSS_COMPILE="aarch64-linux-gnu-" CROSS_COMPILE_ARM32="arm-linux-gnueabi-"
         fi
                 
     - name: 准备打包内核
