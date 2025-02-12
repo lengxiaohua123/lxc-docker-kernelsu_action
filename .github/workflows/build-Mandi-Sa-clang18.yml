@@ -47,7 +47,7 @@ jobs:
       run: |
         cd $GITHUB_WORKSPACE/kernel_workspace
         mkdir clang-zyc
-        axel https://github.com/ZyCromerZ/Clang/releases/download/20.0.0git-20241016-release/Clang-20.0.0git-20241016.tar.gz
+        wget https://github.com/ZyCromerZ/Clang/releases/download/20.0.0git-20241016-release/Clang-20.0.0git-20241016.tar.gz
         tar -C clang-zyc/ -zxf Clang-20.0.0git-20241016.tar.gz
         
     - name: 下载内核源码
