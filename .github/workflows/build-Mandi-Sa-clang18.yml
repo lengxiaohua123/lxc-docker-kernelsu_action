@@ -1,4 +1,4 @@
-name: 低端机 zyc-clang
+name: 低端机 zyc-clang20
 on:
   workflow_dispatch:
 
