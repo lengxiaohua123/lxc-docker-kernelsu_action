@@ -46,8 +46,10 @@ jobs:
     - name: 下载zyc-clang编译器
       run: |
         cd $GITHUB_WORKSPACE/kernel_workspace
-        mkdir clang-aosp
-        git clone -q --depth=1 --single-branch https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86 -b android13-release clang-aosp
+        mkdir clang-zyc
+        wget https://github.com/ZyCromerZ/Clang/releases/download/20.0.0git-20241016-release/Clang-20.0.0git-20241016.tar.gz
+        tar -C clang-zyc/ -zxf Clang-20.0.0git-20241016.tar.gz
+
         wget https://github.com/tomxi1997/Toolchain-for-aarch64-hosts/releases/download/v6/google_gcc-4.9-main-20240120.tar.xz
         tar -xf google_gcc-4.9-main-20240120.tar.xz
         
@@ -113,9 +115,9 @@ jobs:
       run: |
         cd $GITHUB_WORKSPACE/kernel_workspace/android-kernel
         sed -i "s/CONFIG_CC_STACKPROTECTOR_STRONG=y/# CONFIG_CC_STACKPROTECTOR_STRONG is not set/g" arch/arm64/configs/${{ env.KERNEL_CONFIG }}
-        # wget https://raw.githubusercontent.com/lengxiaohua123/LXC_KernelSU_Action/refs/heads/main/patches/clangfix2.sh
-        # chmod u+x clangfix2.sh
-        # ./clangfix2.sh
+        wget https://raw.githubusercontent.com/lengxiaohua123/LXC_KernelSU_Action/refs/heads/main/patches/clangfix2.sh
+        chmod u+x clangfix2.sh
+        ./clangfix2.sh
         
     - name: 配置 ksu
       if: env.ENABLE_KERNELSU == 'true'
@@ -141,7 +143,7 @@ jobs:
     - name: 开始编译内核
       run: |
         cd $GITHUB_WORKSPACE/kernel_workspace/android-kernel
-        export PATH=$GITHUB_WORKSPACE/kernel_workspace/clang-aosp/clang-r450784d/bin:$GITHUB_WORKSPACE/kernel_workspace/google_gcc-4.9-main/aarch64/bin:$GITHUB_WORKSPACE/kernel_workspace/google_gcc-4.9-main/arm/bin:$PATH
+        export PATH=$GITHUB_WORKSPACE/kernel_workspace/clang-zyc/bin:$GITHUB_WORKSPACE/kernel_workspace/google_gcc-4.9-main/aarch64/bin:$GITHUB_WORKSPACE/kernel_workspace/google_gcc-4.9-main/arm/bin:$PATH
         # export KBUILD_BUILD_HOST=17
         # export KBUILD_BUILD_USER=HyperPower
         export args="LLVM=1 LLVM_IAS=1 ARCH=arm64 SUBARCH=arm64 CROSS_COMPILE=aarch64-linux-android- CROSS_COMPILE_ARM32=arm-linux-androideabi- CLANG_TRIPLE=aarch64-linux-gnu- "
