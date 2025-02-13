@@ -47,8 +47,10 @@ jobs:
       run: |
         cd $GITHUB_WORKSPACE/kernel_workspace
         mkdir clang-zyc
-        wget https://github.com/ZyCromerZ/Clang/releases/download/20.0.0git-20241016-release/Clang-20.0.0git-20241016.tar.gz
-        tar -C clang-zyc/ -zxf Clang-20.0.0git-20241016.tar.gz
+        # wget https://github.com/ZyCromerZ/Clang/releases/download/20.0.0git-20241016-release/Clang-20.0.0git-20241016.tar.gz
+        # tar -C clang-zyc/ -zxf Clang-20.0.0git-20241016.tar.gz
+
+        git clone https://gitea.com/Mandi-Sa/clang.git --depth=1 -b amd64-kernel-arm clang-zyc
 
         wget https://github.com/tomxi1997/Toolchain-for-aarch64-hosts/releases/download/v6/google_gcc-4.9-main-20240120.tar.xz
         tar -xf google_gcc-4.9-main-20240120.tar.xz
