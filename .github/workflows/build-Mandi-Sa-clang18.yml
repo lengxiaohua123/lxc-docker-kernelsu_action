@@ -9,7 +9,7 @@ jobs:
     if: github.event.repository.owner.id == github.event.sender.id
     
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@latest
     
     - name: 环境变量配置
       run: |
