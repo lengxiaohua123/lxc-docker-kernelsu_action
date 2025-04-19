@@ -54,6 +54,7 @@ jobs:
         mv gemini-perf_defconfig android-kernel/arch/arm64/configs/${{ env.KERNEL_CONFIG }}
         cd kernel_workspace/android-kernel
         sed -i.bak 's/char ctx\[crypto_shash_descsize(apparmor_tfm)\];/#define AA_CRYPTO_CTX_SIZE 256\n        char ctx\[AA_CRYPTO_CTX_SIZE\];/' security/apparmor/crypto.c
+        cat security/apparmor/crypto.c
                   
     - name: 开启lxc和docker配置
       if: env.ENABLE_LXC_DOCKER == 'true'
