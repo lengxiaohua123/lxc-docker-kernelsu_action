@@ -46,8 +46,8 @@ jobs:
         rm clang.tar.xz
         ls
         mv LLVM* clang
-        ls
-        exit
+        ls clang/*
+        exit 1
         
     - name: 下载内核源码
       run: |
