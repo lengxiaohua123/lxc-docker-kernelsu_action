@@ -44,10 +44,7 @@ jobs:
         wget -O clang.tar.xz $BUILD_TOOL
         tar -xf clang.tar.xz
         rm clang.tar.xz
-        ls
         mv LLVM* clang
-        ls clang/*
-        exit 1
         
     - name: 下载内核源码
       run: |
@@ -160,7 +157,7 @@ jobs:
     - name: 开始编译内核
       run: |
         cd $GITHUB_WORKSPACE/kernel_workspace/android-kernel
-        export PATH=$GITHUB_WORKSPACE/kernel_workspace/clang-mandi-sa/bin:$PATH
+        export PATH=$GITHUB_WORKSPACE/kernel_workspace/clang/bin:$PATH
         export KBUILD_BUILD_HOST=17
         export KBUILD_BUILD_USER=HyperPower
         make -s -j$(nproc --all) O=out ARCH=arm64 ${{ env.KERNEL_CONFIG }}
