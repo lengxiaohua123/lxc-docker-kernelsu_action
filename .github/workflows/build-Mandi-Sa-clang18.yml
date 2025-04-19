@@ -1,4 +1,4 @@
-name: 低端机 阿菌未霜clang18 
+name: 编译gemini
 on:
   workflow_dispatch:
 
@@ -9,7 +9,7 @@ jobs:
     if: github.event.repository.owner.id == github.event.sender.id
     
     steps:
-    - uses: actions/checkout@latest
+    - uses: actions/checkout@v4
     
     - name: 环境变量配置
       run: |
@@ -29,6 +29,7 @@ jobs:
         cat config.env | grep ADD_OVERLAYFS_CONFIG= >> $GITHUB_ENV
         cat config.env | grep DISABLE-LTO= >> $GITHUB_ENV
         cat config.env | grep DISABLE_CC_WERROR= >> $GITHUB_ENV
+        cat config.env | grep BUILD_TOOL= >> $GITHUB_ENV
 
     - name: 构建编译内核环境
       run: |
@@ -37,11 +38,16 @@ jobs:
         mkdir -p $GITHUB_WORKSPACE/kernel_workspace
         ls -al $GITHUB_WORKSPACE
     
-    - name: 下载 阿菌未霜 clang 编译器
+    - name: 下载 编译工具
       run: |
         cd $GITHUB_WORKSPACE/kernel_workspace
-        mkdir clang-mandi-sa
-        git clone https://codeberg.org/Mandi-Sa/clang --depth=1 -b amd64-kernel-arm clang-mandi-sa
+        wget -O clang.tar.xz $BUILD_TOOL
+        tar -xf clang.tar.xz
+        rm clang.tar.xz
+        ls
+        mv LLVM* clang
+        ls
+        exit
         
     - name: 下载内核源码
       run: |
