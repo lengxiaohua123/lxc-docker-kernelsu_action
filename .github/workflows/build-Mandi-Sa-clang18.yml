@@ -52,7 +52,7 @@ jobs:
         git clone ${{ env.KERNEL_SOURCE }} -b ${{ env.KERNEL_SOURCE_BRANCH }} android-kernel --depth=1
         wget https://raw.githubusercontent.com/NewtoPhone/android_kernel_xiaomi_msm8996/lineage-21/arch/arm64/configs/vendor/gemini-perf_defconfig -O gemini-perf_defconfig
         mv gemini-perf_defconfig android-kernel/arch/arm64/configs/${{ env.KERNEL_CONFIG }}
-        cd kernel_workspace/android-kernel
+        cd android-kernel
         sed -i.bak 's/char ctx\[crypto_shash_descsize(apparmor_tfm)\];/#define AA_CRYPTO_CTX_SIZE 256\n        char ctx\[AA_CRYPTO_CTX_SIZE\];/' security/apparmor/crypto.c
         cat security/apparmor/crypto.c
                   
