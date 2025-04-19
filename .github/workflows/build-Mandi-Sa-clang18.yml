@@ -51,7 +51,7 @@ jobs:
         cd $GITHUB_WORKSPACE/kernel_workspace
         git clone ${{ env.KERNEL_SOURCE }} -b ${{ env.KERNEL_SOURCE_BRANCH }} android-kernel --depth=1
         wget https://raw.githubusercontent.com/NewtoPhone/android_kernel_xiaomi_msm8996/lineage-21/arch/arm64/configs/vendor/gemini-perf_defconfig -O ${{ env.KERNEL_CONFIG }}
-        cp ${{ env.KERNEL_CONFIG }} android-kernel/arch/arm64/configs/${{ env.KERNEL_CONFIG }}
+        cp ${{ env.KERNEL_CONFIG }} android-kernel/arch/arm64/configs/
                   
     - name: 开启lxc和docker配置
       if: env.ENABLE_LXC_DOCKER == 'true'
